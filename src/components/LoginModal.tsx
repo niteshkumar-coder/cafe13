@@ -99,7 +99,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
 
       // DIRECT LOGIN BYPASS for 9142645990
       const cleanPhone = phone.replace(/\D/g, "");
-      if (cleanPhone === "9142645990") {
+      if (cleanPhone === "9142645990" || cleanPhone === "919142645990") {
         // Use anonymous auth to get a real session for database access
         const { signInAnonymously } = await import("firebase/auth");
         const result = await signInAnonymously(auth);
