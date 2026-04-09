@@ -151,6 +151,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
         setError("reCAPTCHA verification failed or timed out. Please try again.");
       } else if (err.code === "auth/operation-not-allowed" || err.message?.includes("operation-not-allowed")) {
         setError("Authentication methods (Phone/Anonymous) are not enabled in your Firebase Console. Please enable BOTH 'Phone' and 'Anonymous' under Authentication > Sign-in method.");
+      } else if (err.code === "auth/admin-restricted-operation" || err.message?.includes("admin-restricted-operation")) {
+        setError("User registration is disabled. Please go to Firebase Console > Authentication > Settings > User actions and enable 'Allow users to sign up'. Also ensure 'Anonymous' auth is enabled.");
       } else {
         setError(err.message || "Failed to send OTP.");
       }
