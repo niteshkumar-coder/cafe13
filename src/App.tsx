@@ -154,9 +154,11 @@ const Hero = ({ onOrderClick }: { onOrderClick: () => void }) => {
             >
               Order Now
             </Button>
-            <Button size="lg" variant="outline" className="h-14 px-10 text-lg border-white/20 hover:bg-white/10 rounded-full backdrop-blur-md">
-              Explore Menu
-            </Button>
+            <a href="#menu">
+              <Button size="lg" variant="outline" className="h-14 px-10 text-lg border-white/20 hover:bg-white/10 rounded-full backdrop-blur-md">
+                Explore Menu
+              </Button>
+            </a>
           </div>
 
           <div className="mt-16 flex flex-wrap justify-center gap-8 md:gap-16 opacity-60">
