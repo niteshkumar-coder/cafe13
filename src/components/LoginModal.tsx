@@ -52,13 +52,15 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
               recaptchaVerifier.current.clear();
             }
             
+            // Using 'normal' size instead of 'invisible' to avoid timeouts in iframes
             recaptchaVerifier.current = new RecaptchaVerifier(auth, "recaptcha-container", {
-              size: "invisible",
+              size: "normal",
               callback: () => {
                 console.log("Recaptcha solved");
               },
               "expired-callback": () => {
                 console.log("Recaptcha expired");
+                if (recaptchaVerifier.current) recaptchaVerifier.current.reset();
               }
             });
             
@@ -99,7 +101,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
         const el = document.getElementById("recaptcha-container");
         if (el) {
           recaptchaVerifier.current = new RecaptchaVerifier(auth, "recaptcha-container", {
-            size: "invisible"
+            size: "normal"
           });
         } else {
           throw new Error("Recaptcha container not found.");
@@ -111,9 +113,17 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
       setStep("otp");
     } catch (err: any) {
       console.error("Error sending OTP:", err);
-      setError(err.message || "Failed to send OTP.");
+      // Handle specific reCAPTCHA errors
+      if (err.message?.includes("reCAPTCHA")) {
+        setError("reCAPTCHA verification failed or timed out. Please try again.");
+      } else {
+        setError(err.message || "Failed to send OTP.");
+      }
+      
       if (recaptchaVerifier.current) {
-        try { recaptchaVerifier.current.clear(); } catch (e) {}
+        try { 
+          recaptchaVerifier.current.clear(); 
+        } catch (e) {}
         recaptchaVerifier.current = null;
       }
     } finally {
@@ -221,7 +231,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[400px] glass border-white/10 p-0 overflow-hidden">
         <div className="relative p-8">
-          <div id="recaptcha-container"></div>
+          <div id="recaptcha-container" className="flex justify-center mb-4 min-h-[78px]"></div>
           
           <AnimatePresence mode="wait">
             {step === "phone" && (
