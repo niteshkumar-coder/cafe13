@@ -9,29 +9,19 @@
       // This must run before any other scripts.
       (function() {
         try {
-          const originalFetch = window.fetch;
-          
-          // Try to redefine the property to be writable and configurable
-          try {
-            Object.defineProperty(window, 'fetch', {
-              value: originalFetch,
-              writable: true,
-              configurable: true,
-              enumerable: true
-            });
-          } catch (e) {
-            // If defineProperty fails, try to delete and re-assign
-            try {
-              delete window.fetch;
-              window.fetch = originalFetch;
-            } catch (e2) {
-              console.warn('Could not make window.fetch writable:', e2);
-            }
-          }
-          
-          console.log('Successfully patched window.fetch to be writable in index.html');
+          var _fetch = window.fetch;
+          Object.defineProperty(window, 'fetch', {
+            get: function() { return _fetch; },
+            set: function(v) { 
+              console.log('fetch property was set');
+              _fetch = v; 
+            },
+            configurable: true,
+            enumerable: true
+          });
+          console.log('Successfully initialized writable fetch proxy');
         } catch (e) {
-          console.warn('Could not patch window.fetch in index.html:', e);
+          console.warn('window.fetch is read-only and cannot be redefined:', e);
         }
 
         // Global error suppressor for this specific error
@@ -41,7 +31,7 @@
             event.message.includes('only a getter')
           )) {
             event.preventDefault();
-            console.warn('Suppressed fetch property assignment error:', event.message);
+            console.warn('Suppressed fetch property assignment error');
           }
         }, true);
       })();
