@@ -108,7 +108,7 @@ const Navbar = ({ user, onLoginClick, onLogout }: { user: any, onLoginClick: () 
   );
 };
 
-const Hero = () => {
+const Hero = ({ onOrderClick }: { onOrderClick: () => void }) => {
   const { scrollY } = useScroll();
   const y1 = useTransform(scrollY, [0, 500], [0, 200]);
 
@@ -143,8 +143,12 @@ const Hero = () => {
 
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" className="h-14 px-10 text-lg bg-primary text-primary-foreground hover:bg-primary/90 rounded-full gold-glow">
-              Reserve a Table
+            <Button 
+              size="lg" 
+              onClick={onOrderClick}
+              className="h-14 px-10 text-lg bg-primary text-primary-foreground hover:bg-primary/90 rounded-full gold-glow"
+            >
+              Order Now
             </Button>
             <Button size="lg" variant="outline" className="h-14 px-10 text-lg border-white/20 hover:bg-white/10 rounded-full backdrop-blur-md">
               Explore Menu
@@ -343,7 +347,7 @@ const SocialProof = () => {
   );
 };
 
-const MenuPreview = () => {
+const MenuPreview = ({ onOrderClick }: { onOrderClick: () => void }) => {
   const categories = CAFE_INFO.menu || [];
 
   return (
@@ -375,25 +379,35 @@ const MenuPreview = () => {
                 className="grid md:grid-cols-2 gap-6"
               >
                 {cat.items.map((item, i) => (
-                  <Link 
+                  <div 
                     key={i} 
-                    to={`/menu/${encodeURIComponent(item.name)}`}
-                    className="flex justify-between items-center p-6 rounded-2xl bg-secondary/20 border border-white/5 hover:border-primary/20 transition-colors group"
+                    className="flex justify-between items-center p-6 rounded-2xl bg-secondary/20 border border-white/5 hover:border-primary/20 transition-colors group cursor-pointer"
+                    onClick={onOrderClick}
                   >
                     <span className="font-serif text-xl group-hover:text-primary transition-colors">{item.name}</span>
                     <div className="h-px flex-grow mx-4 border-t border-dashed border-white/10" />
-                    <ChevronRight className="w-4 h-4 opacity-30" />
-                  </Link>
+                    <div className="flex items-center gap-2">
+                      <span className="text-primary font-bold">{item.price}</span>
+                      <ChevronRight className="w-4 h-4 opacity-30" />
+                    </div>
+                  </div>
                 ))}
               </motion.div>
             </TabsContent>
           ))}
         </Tabs>
 
-        <div className="text-center mt-16">
+        <div className="text-center mt-16 flex flex-col sm:flex-row justify-center gap-4">
+          <Button 
+            size="lg" 
+            onClick={onOrderClick}
+            className="h-14 px-10 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 gold-glow font-bold"
+          >
+            Order Now
+          </Button>
           <Link to="/menu">
-            <Button size="lg" className="h-14 px-10 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 gold-glow">
-              View Full Menu with Images
+            <Button size="lg" variant="outline" className="h-14 px-10 rounded-full border-white/10 hover:bg-white/5">
+              View Full Menu
             </Button>
           </Link>
         </div>
@@ -833,13 +847,13 @@ const MenuPage = ({ user, onOrderClick }: { user: any, onOrderClick: () => void 
   );
 };
 
-const HomePage = () => (
+const HomePage = ({ onOrderClick }: { onOrderClick: () => void }) => (
   <>
-    <Hero />
+    <Hero onOrderClick={onOrderClick} />
     <About />
     <Features />
     <SocialProof />
-    <MenuPreview />
+    <MenuPreview onOrderClick={onOrderClick} />
     <Gallery />
     <Pricing />
     <Reservations />
@@ -914,7 +928,7 @@ export default function App() {
         />
         <main>
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<HomePage onOrderClick={handleOrderClick} />} />
             <Route path="/menu" element={<MenuPage user={user} onOrderClick={handleOrderClick} />} />
             <Route path="/menu/:itemName" element={<MenuPage user={user} onOrderClick={handleOrderClick} />} />
           </Routes>

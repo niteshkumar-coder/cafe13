@@ -160,6 +160,20 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, u
                 exit={{ opacity: 0, y: -10 }}
                 className="h-full flex flex-col"
               >
+                {/* User Info Header */}
+                <div className="px-6 py-3 bg-primary/5 border-b border-white/5 flex flex-wrap items-center gap-4 text-xs">
+                  <div className="flex items-center gap-2">
+                    <User className="w-3 h-3 text-primary" />
+                    <span className="opacity-60 uppercase tracking-widest">Customer:</span>
+                    <span className="font-bold">{user?.name}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Phone className="w-3 h-3 text-primary" />
+                    <span className="opacity-60 uppercase tracking-widest">Mobile:</span>
+                    <span className="font-bold">{user?.phone}</span>
+                  </div>
+                </div>
+
                 <div className="flex-grow overflow-hidden flex flex-col md:flex-row">
                   {/* Menu List */}
                   <ScrollArea className="flex-grow p-6 border-r border-white/5">
@@ -174,9 +188,23 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, u
                               <h4 className="font-serif font-bold text-sm">{item.name}</h4>
                               <p className="text-primary font-bold text-sm">{item.price}</p>
                             </div>
-                            <Button size="sm" variant="secondary" className="h-7 text-[10px] uppercase tracking-widest font-bold" onClick={() => addToCart(item)}>
-                              Add to Cart
-                            </Button>
+                            <div className="flex items-center gap-2 mt-2">
+                              {cart.find(i => i.name === item.name) ? (
+                                <div className="flex items-center gap-3 bg-white/10 rounded-lg px-2 py-1">
+                                  <button onClick={() => updateQuantity(item.name, -1)} className="p-1 hover:text-primary transition-colors">
+                                    <Minus className="w-3 h-3" />
+                                  </button>
+                                  <span className="text-xs font-bold w-4 text-center">{cart.find(i => i.name === item.name)?.quantity}</span>
+                                  <button onClick={() => addToCart(item)} className="p-1 hover:text-primary transition-colors">
+                                    <Plus className="w-3 h-3" />
+                                  </button>
+                                </div>
+                              ) : (
+                                <Button size="sm" variant="secondary" className="h-7 text-[10px] uppercase tracking-widest font-bold w-full" onClick={() => addToCart(item)}>
+                                  Add to Cart
+                                </Button>
+                              )}
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -374,11 +402,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, u
                   <p className="text-foreground/60">Your order has been sent to the kitchen.</p>
                 </div>
 
-                <div className="flex items-center justify-center gap-4 p-6 rounded-3xl bg-secondary/30 border border-white/5 max-w-xs mx-auto">
-                  <Clock className="w-6 h-6 text-primary animate-pulse" />
-                  <div className="text-left">
-                    <p className="text-2xl font-serif font-bold text-primary">5 min wait</p>
-                    <p className="text-[10px] uppercase tracking-widest opacity-40">Estimated Preparation Time</p>
+                <div className="flex flex-col items-center justify-center gap-4 p-8 rounded-3xl bg-primary/10 border border-primary/20 max-w-sm mx-auto gold-glow">
+                  <Clock className="w-10 h-10 text-primary animate-pulse" />
+                  <div className="text-center">
+                    <p className="text-4xl font-serif font-bold text-primary mb-1">5 min wait</p>
+                    <p className="text-xs uppercase tracking-[0.2em] opacity-60 font-bold">Estimated Preparation Time</p>
                   </div>
                 </div>
 
