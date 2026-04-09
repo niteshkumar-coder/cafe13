@@ -1,0 +1,39 @@
+{
+  "entities": {
+    "users": {
+      "title": "User Profile",
+      "description": "Stores user profile information after authentication.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "name": { "type": "string", "description": "User's full name" },
+        "phone": { "type": "string", "description": "User's verified phone number" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Account creation timestamp" }
+      },
+      "required": ["uid", "name", "phone"]
+    },
+    "orders": {
+      "title": "Order",
+      "description": "Stores customer orders.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "UID of the user who placed the order" },
+        "items": { "type": "array", "description": "List of ordered items" },
+        "total": { "type": "string", "description": "Total order amount" },
+        "status": { "type": "string", "enum": ["pending", "preparing", "delivered", "cancelled"], "description": "Current status of the order" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Order placement timestamp" }
+      },
+      "required": ["userId", "items", "total", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "users",
+      "description": "User profile document"
+    },
+    "/orders/{orderId}": {
+      "schema": "orders",
+      "description": "Order document"
+    }
+  }
+}
