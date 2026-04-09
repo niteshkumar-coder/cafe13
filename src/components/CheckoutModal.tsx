@@ -48,13 +48,21 @@ interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
   user: { name: string; phone: string; uid: string } | null;
+  initialItems?: CartItem[];
 }
 
 type CheckoutStep = "menu" | "details" | "payment" | "success";
 
-export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, user }) => {
+export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, user, initialItems }) => {
   const [step, setStep] = useState<CheckoutStep>("menu");
   const [cart, setCart] = useState<CartItem[]>([]);
+
+  // Initialize cart if initialItems are provided
+  React.useEffect(() => {
+    if (isOpen && initialItems && initialItems.length > 0) {
+      setCart(initialItems);
+    }
+  }, [isOpen, initialItems]);
   const [tableNo, setTableNo] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"online" | "cod" | "">("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -158,7 +166,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, u
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="h-full flex flex-col"
+                className="h-full flex flex-col min-h-0"
               >
                 {/* User Info Header */}
                 <div className="px-6 py-3 bg-primary/5 border-b border-white/5 flex flex-wrap items-center gap-4 text-xs">
@@ -174,10 +182,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, u
                   </div>
                 </div>
 
-                <div className="flex-grow overflow-hidden flex flex-col md:flex-row">
+                <div className="flex-grow overflow-hidden flex flex-col md:flex-row min-h-0">
                   {/* Menu List */}
-                  <ScrollArea className="flex-grow p-6 border-r border-white/5">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <ScrollArea className="flex-[2] h-full p-6 border-r border-white/5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-10">
                       {menuItems.map((item, i) => (
                         <div key={i} className="p-3 rounded-2xl bg-white/5 border border-white/5 flex gap-4 group">
                           <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0">
@@ -410,13 +418,21 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, u
                   </div>
                 </div>
 
-                <Button 
-                  variant="outline" 
-                  className="h-12 px-8 rounded-full border-white/10 hover:bg-white/5"
-                  onClick={resetAndClose}
-                >
-                  Close & Continue Browsing
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
+                  <Button 
+                    variant="outline" 
+                    className="flex-1 h-12 rounded-xl border-white/10 hover:bg-white/5"
+                    onClick={() => setStep("menu")}
+                  >
+                    Order More
+                  </Button>
+                  <Button 
+                    className="flex-1 h-12 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-bold gold-glow"
+                    onClick={resetAndClose}
+                  >
+                    Done
+                  </Button>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>

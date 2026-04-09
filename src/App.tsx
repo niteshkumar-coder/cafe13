@@ -29,12 +29,13 @@ import { useState, useEffect, useMemo } from "react";
 import { BrowserRouter, Routes, Route, Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { LoginModal } from "./components/LoginModal";
 import { CheckoutModal } from "./components/CheckoutModal";
+import { OrderHistoryModal } from "./components/OrderHistoryModal";
 import { auth } from "./lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
 // --- Components ---
 
-const Navbar = ({ user, onLoginClick, onLogout }: { user: any, onLoginClick: () => void, onLogout: () => void }) => {
+const Navbar = ({ user, onLoginClick, onLogout, onHistoryClick }: { user: any, onLoginClick: () => void, onLogout: () => void, onHistoryClick: () => void }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === "/";
@@ -86,10 +87,13 @@ const Navbar = ({ user, onLoginClick, onLogout }: { user: any, onLoginClick: () 
         <div className="flex items-center gap-4">
           {user ? (
             <div className="flex items-center gap-4">
-              <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
-                <UserIcon className="w-4 h-4 text-primary" />
-                <span className="text-xs font-bold uppercase tracking-widest">{user.name.split(' ')[0]}</span>
-              </div>
+              <button 
+                onClick={onHistoryClick}
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-all group"
+              >
+                <UserIcon className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
+                <span className="text-xs font-bold uppercase tracking-widest hidden sm:inline">{user.name.split(' ')[0]}</span>
+              </button>
               <Button variant="ghost" size="icon" onClick={onLogout} className="rounded-full hover:bg-red-500/10 hover:text-red-500">
                 <LogOut className="w-4 h-4" />
               </Button>
@@ -868,6 +872,8 @@ export default function App() {
   const [user, setUser] = useState<any>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
+  const [isOrderHistoryOpen, setIsOrderHistoryOpen] = useState(false);
+  const [reorderItems, setReorderItems] = useState<any[]>([]);
   const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
@@ -903,11 +909,18 @@ export default function App() {
   };
 
   const handleOrderClick = () => {
+    setReorderItems([]); // Clear reorder items when starting a fresh order
     if (!user) {
       setIsLoginModalOpen(true);
     } else {
       setIsCheckoutModalOpen(true);
     }
+  };
+
+  const handleReorder = (items: any[]) => {
+    setIsOrderHistoryOpen(false);
+    setReorderItems(items);
+    setIsCheckoutModalOpen(true);
   };
 
   if (!isAuthReady) {
@@ -925,6 +938,7 @@ export default function App() {
           user={user} 
           onLoginClick={() => setIsLoginModalOpen(true)} 
           onLogout={handleLogout}
+          onHistoryClick={() => setIsOrderHistoryOpen(true)}
         />
         <main>
           <Routes>
@@ -954,8 +968,19 @@ export default function App() {
 
         <CheckoutModal
           isOpen={isCheckoutModalOpen}
-          onClose={() => setIsCheckoutModalOpen(false)}
+          onClose={() => {
+            setIsCheckoutModalOpen(false);
+            setReorderItems([]);
+          }}
           user={user}
+          initialItems={reorderItems}
+        />
+
+        <OrderHistoryModal
+          isOpen={isOrderHistoryOpen}
+          onClose={() => setIsOrderHistoryOpen(false)}
+          user={user}
+          onReorder={handleReorder}
         />
       </div>
     </BrowserRouter>
