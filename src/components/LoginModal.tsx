@@ -97,6 +97,39 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
         formattedPhone = "+91" + formattedPhone;
       }
 
+      // DIRECT LOGIN BYPASS for 9142645990
+      const cleanPhone = phone.replace(/\D/g, "");
+      if (cleanPhone === "9142645990") {
+        // Use anonymous auth to get a real session for database access
+        const { signInAnonymously } = await import("firebase/auth");
+        const result = await signInAnonymously(auth);
+        const user = result.user;
+
+        // Try to find existing user in Firestore to get their real name
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("phone", "==", "+919142645990"));
+        const querySnapshot = await getDocs(q);
+        
+        let existingName = "Admin User";
+        if (!querySnapshot.empty) {
+          existingName = querySnapshot.docs[0].data().name;
+        }
+
+        setName(existingName);
+        setStep("success");
+        
+        setTimeout(() => {
+          onLoginSuccess({ 
+            name: existingName, 
+            phone: "+919142645990", 
+            uid: user.uid // Use the real anonymous UID for database rules
+          });
+          onClose();
+          resetForm();
+        }, 1500);
+        return;
+      }
+
       if (!recaptchaVerifier.current) {
         const el = document.getElementById("recaptcha-container");
         if (el) {
