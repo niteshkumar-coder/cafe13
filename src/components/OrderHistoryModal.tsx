@@ -84,8 +84,9 @@ export const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ isOpen, on
           </div>
         </DialogHeader>
 
-        <ScrollArea className="flex-grow p-6">
-          {isLoading ? (
+        <div className="flex-grow overflow-y-auto p-6 custom-scrollbar">
+          <div className="pb-10">
+            {isLoading ? (
             <div className="flex flex-col items-center justify-center py-20 gap-4">
               <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
               <p className="text-xs uppercase tracking-widest opacity-40">Loading your orders...</p>
@@ -151,8 +152,9 @@ export const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ isOpen, on
               ))}
             </div>
           )}
-        </ScrollArea>
-      </DialogContent>
+        </div>
+      </div>
+    </DialogContent>
     </Dialog>
   );
 };

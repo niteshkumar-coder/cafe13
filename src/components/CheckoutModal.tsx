@@ -184,8 +184,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, u
 
                 <div className="flex-grow overflow-hidden flex flex-col md:flex-row min-h-0">
                   {/* Menu List */}
-                  <ScrollArea className="flex-[2] h-full p-6 border-r border-white/5">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-10">
+                  <div className="flex-[2] overflow-y-auto p-6 border-r border-white/5 custom-scrollbar">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-24">
                       {menuItems.map((item, i) => (
                         <div key={i} className="p-3 rounded-2xl bg-white/5 border border-white/5 flex gap-4 group">
                           <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0">
@@ -217,7 +217,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, u
                         </div>
                       ))}
                     </div>
-                  </ScrollArea>
+                  </div>
 
                   {/* Cart Summary (Desktop Sidebar) */}
                   <div className="w-full md:w-72 bg-black/20 p-6 flex flex-col shrink-0">
@@ -225,8 +225,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, u
                       <ShoppingCart className="w-4 h-4 text-primary" />
                       <h3 className="font-bold text-sm uppercase tracking-widest">Your Cart ({cart.length})</h3>
                     </div>
-                    <ScrollArea className="flex-grow -mx-2 px-2">
-                      <div className="space-y-4">
+                    <div className="flex-grow overflow-y-auto -mx-2 px-2 custom-scrollbar">
+                      <div className="space-y-4 pb-4">
                         {cart.length === 0 ? (
                           <p className="text-xs opacity-40 italic text-center py-8">Your cart is empty</p>
                         ) : (
@@ -246,7 +246,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, u
                           ))
                         )}
                       </div>
-                    </ScrollArea>
+                    </div>
                     <Separator className="my-4 bg-white/10" />
                     <div className="flex justify-between items-center mb-4">
                       <span className="text-xs uppercase tracking-widest opacity-40">Total</span>
