@@ -44,10 +44,14 @@ service cloud.firestore {
     }
 
     function isValidOrder(data) {
-      return data.keys().hasAll(['userId', 'items', 'total', 'status', 'createdAt']) &&
+      return data.keys().hasAll(['userId', 'userName', 'userPhone', 'items', 'total', 'tableNo', 'paymentMethod', 'status', 'createdAt']) &&
              data.userId == request.auth.uid &&
+             data.userName is string && data.userName.size() > 0 &&
+             data.userPhone is string &&
              data.items is list && data.items.size() > 0 && data.items.size() < 50 &&
              data.total is string &&
+             data.tableNo is string &&
+             data.paymentMethod in ['online', 'cod'] &&
              data.status in ['pending', 'preparing', 'delivered', 'cancelled'] &&
              data.createdAt is timestamp;
     }
@@ -57,16 +61,18 @@ service cloud.firestore {
     // ===============================================================
 
     match /users/{userId} {
-      allow read: if isOwner(userId);
+      allow get: if isOwner(userId);
+      allow list: if isAuthenticated() && resource.data.uid == request.auth.uid;
       allow create: if isOwner(userId) && isValidUser(request.resource.data);
       allow update: if isOwner(userId) && isValidUser(request.resource.data) && 
                       request.resource.data.uid == resource.data.uid;
     }
 
     match /orders/{orderId} {
-      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow get: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow list: if isAuthenticated() && resource.data.userId == request.auth.uid;
       allow create: if isAuthenticated() && isValidOrder(request.resource.data);
-      allow update: if false; // Orders are immutable for users for now
+      allow update: if false; 
       allow delete: if false;
     }
 

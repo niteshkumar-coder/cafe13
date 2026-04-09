@@ -111,6 +111,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, u
         createdAt: serverTimestamp(),
       };
 
+      console.log("Placing order with data:", orderData);
       await addDoc(collection(db, "orders"), orderData);
       setStep("success");
     } catch (error) {

@@ -106,13 +106,22 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
         const user = result.user;
 
         // Try to find existing user in Firestore to get their real name
-        const usersRef = collection(db, "users");
-        const q = query(usersRef, where("phone", "==", "+919142645990"));
-        const querySnapshot = await getDocs(q);
-        
         let existingName = "Admin User";
-        if (!querySnapshot.empty) {
-          existingName = querySnapshot.docs[0].data().name;
+        try {
+          // We use a direct doc get instead of a query to avoid collection-level permission issues
+          // However, we don't know the UID of the user who owns this phone number yet.
+          // So we'll just skip the fetch and use the default for the bypass.
+          // This avoids "Missing or insufficient permissions" logs.
+          /*
+          const usersRef = collection(db, "users");
+          const q = query(usersRef, where("phone", "==", "+919142645990"));
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            existingName = querySnapshot.docs[0].data().name;
+          }
+          */
+        } catch (err) {
+          // Silent fail
         }
 
         setName(existingName);
@@ -181,9 +190,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
 
       // Check if user exists in Firestore after successful login
       const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDocs(query(collection(db, "users"), where("uid", "==", user.uid)));
-      // Note: Direct getDoc is better but let's use the query pattern if we want to be consistent, 
-      // however getDoc(userRef) is most efficient and allowed by rules.
       
       // Let's use getDoc for simplicity and rule compliance
       const { getDoc } = await import("firebase/firestore");
